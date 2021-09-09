@@ -13,9 +13,9 @@ set(CMAKE_CXX_FLAGS "-std=c++11" )
 
 add_executable(sample1 main.cpp stb_image.cpp shader.cpp)
 
-#-lGLEW -lglfw -lGL -lX11 -lpthread -lXrandr -lXi
+#-lglfw -lGL -lX11 -lpthread -lXrandr -lXi
 target_link_libraries(sample1
-GLEW glfw GL X11 pthread Xrandr Xi glm glad dl)
+ glfw GL X11 pthread Xrandr Xi glm glad dl)
 
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
 set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
