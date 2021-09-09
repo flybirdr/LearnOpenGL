@@ -1,10 +1,11 @@
+#define GLFW_INCLUDE_NONE
+#define GLM_FORCE_MESSAGES
 #include "shader.h"
 #include "stb_image.h"
-#include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <cmath>
 #include <fstream>
-#define GLM_FORCE_MESSAGES
+#include <glad/glad.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -62,9 +63,11 @@ int main(int, char **)
 
   glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
-  if (glewInit() != GLEW_OK)
+  // glad: load all OpenGL function pointers
+  // ---------------------------------------
+  if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
   {
-    std::cout << "glew init failed" << std::endl;
+    std::cout << "Failed to initialize GLAD" << std::endl;
     return -1;
   }
 
