@@ -1,5 +1,6 @@
 #define GLFW_INCLUDE_NONE
 #define GLM_FORCE_MESSAGES
+#include "camera.h"
 #include "shader.h"
 #include "stb_image.h"
 #include <GLFW/glfw3.h>
@@ -12,27 +13,14 @@
 #include <iostream>
 #include <sstream>
 
-int screenWidth = 800;
-int screenHeight = 600;
-
-glm::vec3 cameraPos(0.0f, 0.0f, 3.0f);
-glm::vec3 cameraFront(0.0f, 0.0f, -1.0f);
-glm::vec3 cameraUp(0.0f, 1.0f, 0.0f);
-
-float cameraSpeed = 4.0f;
+const int screenWidth = 800;
+const int screenHeight = 600;
 float lastTime = 0;
-
-float lastX = 0;
-float lastY = 0;
-
-float sensitivity = 0.2f;
-
-float yaw = -90.0f; // yaw is initialized to -90.0 degrees since a yaw of 0.0 results in a direction vector pointing to the right so we initially rotate a bit to the left.
-float pitch = 0.0f;
-
 bool firstMouse = true;
+float lastX;
+float lastY;
 
-float fov = 45.0f;
+Camera camera;
 
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
 void processInput(GLFWwindow *window);
@@ -60,11 +48,8 @@ int main(int, char **)
   glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
   glfwSetCursorPosCallback(window, mouseCallback);
   glfwSetScrollCallback(window, scrollCallback);
-
   glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
-  // glad: load all OpenGL function pointers
-  // ---------------------------------------
   if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
   {
     std::cout << "Failed to initialize GLAD" << std::endl;
@@ -219,10 +204,10 @@ int main(int, char **)
     shader.use();
     glBindVertexArray(vao);
 
-    glm::mat4 view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+    glm::mat4 view = camera.getViewMatrix();
     shader.setMat4("view", glm::value_ptr(view));
 
-    glm::mat4 projection = glm::perspective(glm::radians(fov), screenWidth * 1.0f / screenHeight, 0.1f, 100.0f);
+    glm::mat4 projection = glm::perspective(glm::radians(camera.getZoom()), screenWidth * 1.0f / screenHeight, 0.1f, 100.0f);
     shader.setMat4("projection", glm::value_ptr(projection));
 
     for (int i = 0; i < 10; i++)
@@ -248,7 +233,6 @@ int main(int, char **)
 void processInput(GLFWwindow *window)
 {
   float deltaTime = glfwGetTime() - lastTime;
-  float distance = cameraSpeed * deltaTime;
   lastTime = glfwGetTime();
 
   if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
@@ -257,19 +241,19 @@ void processInput(GLFWwindow *window)
   }
   else if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
   {
-    cameraPos += distance * cameraFront;
+    camera.processKeyBoard(FORWARD, deltaTime);
   }
   else if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
   {
-    cameraPos -= distance * cameraFront;
+    camera.processKeyBoard(BACKWARD, deltaTime);
   }
   else if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
   {
-    cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * distance;
+    camera.processKeyBoard(LEFT, deltaTime);
   }
   else if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
   {
-    cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * distance;
+    camera.processKeyBoard(RIGHT, deltaTime);
   }
 }
 void mouseCallback(GLFWwindow *window, double xpos, double ypos)
@@ -279,65 +263,16 @@ void mouseCallback(GLFWwindow *window, double xpos, double ypos)
     lastX = xpos;
     lastY = ypos;
     firstMouse = false;
-    // return;
+    return;
   }
-
-  float xoffset = xpos - lastX;
-  float yoffset = ypos - lastY;
+  camera.processMouseMovement(xpos - lastX, ypos - lastY, true);
   lastX = xpos;
   lastY = ypos;
-  xoffset *= sensitivity;
-  yoffset *= sensitivity;
-
-  xoffset *= sensitivity;
-  yoffset *= sensitivity;
-
-  yaw += xoffset;
-  pitch += yoffset;
-
-  // make sure that when pitch is out of bounds, screen doesn't get flipped
-  if (pitch > 89.0f)
-    pitch = 89.0f;
-  if (pitch < -89.0f)
-    pitch = -89.0f;
-
-  glm::vec3 front;
-  front.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
-  front.y = sin(glm::radians(pitch));
-  front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
-  cameraFront = glm::normalize(front);
-  // yaw += xoffset;
-  // pitch += yoffset;
-
-  // if (pitch > 89.0f)
-  // {
-  //   pitch = 89.0f;
-  // }
-  // if (pitch < -89.0f)
-  // {
-  //   pitch = -89.0f;
-  // }
-  // glm::vec3 front;
-  // front.x = cos(glm::radians(pitch)) * cos(glm::radians(yaw));
-  // front.y = sin(glm::radians(pitch));
-  // front.z = cos(glm::radians(pitch)) * sin(glm::radians(yaw));
-  // cameraFront = glm::normalize(front);
 }
 
 void scrollCallback(GLFWwindow *window, double xoffset, double yoffset)
 {
-  if (fov > 1.0f && fov <= 45.0f)
-  {
-    fov -= yoffset;
-  }
-  if (fov < 1.0f)
-  {
-    fov = 1.0f;
-  }
-  if (fov > 45.0f)
-  {
-    fov = 45.0f;
-  }
+  camera.processMouseScroll(yoffset);
 }
 void framebuffer_size_callback(GLFWwindow *window, int width, int height)
 {
