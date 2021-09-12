@@ -97,6 +97,10 @@ int main(int, char **)
   // Model objModel("/home/lovefantasy/Desktop/LearnOpenGL/sample17/93-pistol_tauros/pistol_Tauros/models/pistol_tauros.obj");
 
   glEnable(GL_DEPTH_TEST);
+  glDepthFunc(GL_LESS);
+  glEnable(GL_STENCIL_TEST);
+  glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
+  glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
 
   while (!glfwWindowShouldClose(window))
   {
@@ -104,10 +108,10 @@ int main(int, char **)
     processInput(window);
 
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
     shader.use();
-    
+
     glm::mat4 view = camera.getViewMatrix();
     shader.setMat4("view", glm::value_ptr(view));
 
@@ -117,10 +121,24 @@ int main(int, char **)
     glm::mat4 model = glm::mat4(1.0f);
     float zoom = camera.getZoom();
     model = glm::scale(model, glm::vec3(zoom, zoom, zoom));
-    model = glm::rotate(model, glm::radians(30.0f),glm::vec3(0.0f,1.0f,0.0f));
+    model = glm::rotate(model, glm::radians(30.0f), glm::vec3(0.0f, 1.0f, 0.0f));
     shader.setMat4("model", glm::value_ptr(model));
+    shader.setVec2("singleColor", 0.0f, 0.0f);
 
+    glStencilFunc(GL_ALWAYS, 1, 0xFF);
+    glStencilMask(0xFF);
     objModel.draw(shader);
+    glm::mat4 scaleModel = glm::scale(model, glm::vec3(1.005f, 1.005f, 1.005f));
+    shader.setMat4("model", glm::value_ptr(scaleModel));
+    shader.setVec2("singleColor", 1.0f, 0.0f);
+    glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
+    glStencilMask(0x00);
+    glDisable(GL_DEPTH_TEST);
+    glDisable(GL_DEPTH_TEST);
+    objModel.draw(shader);
+    glStencilMask(0xFF);
+    glStencilFunc(GL_ALWAYS, 0, 0xFF);
+    glEnable(GL_DEPTH_TEST);
 
     glfwSwapBuffers(window);
     glfwPollEvents();

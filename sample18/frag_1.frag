@@ -5,6 +5,7 @@ in vec3 vFragPos;
 in vec2 vTexCoord;
 
 uniform vec3 viewPos;
+uniform vec2 singleColor;
 
 struct SpotLight{
    vec3 position;
@@ -60,10 +61,15 @@ out vec4 FragColor;
 
 
 void main(){
-   vec4 dotLight1=calculateDotLight();
-   vec4 directionLight=calculateDirectionLight();
-   vec4 spotLight1=calculateSpotLight();
-   FragColor=directionLight+dotLight1+spotLight1;
+   if(singleColor.x == 0.0){
+      vec4 dotLight1=calculateDotLight();
+      vec4 directionLight=calculateDirectionLight();
+      vec4 spotLight1=calculateSpotLight();
+      FragColor=directionLight+dotLight1+spotLight1;
+   }else{
+      FragColor=vec4(0.0,0.0,1.0,1.0);
+   }
+   
 }
 
 vec4 calculateSpotLight(){
