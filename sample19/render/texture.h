@@ -1,10 +1,10 @@
 #ifndef TEXTURE_H_H
 #define TEXTURE_H_H
 
-#include "stb_image.h"
 #include <fstream>
 #include <glad/glad.h>
 #include <iostream>
+#include <stb/stb_image.h>
 #include <string>
 
 class Texture
@@ -32,6 +32,7 @@ private:
    }
 
 public:
+   Texture() = delete;
    Texture(const std::string &type, const std::string &path);
    Texture(const Texture &src)
    {

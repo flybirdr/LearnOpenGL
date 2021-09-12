@@ -45,6 +45,7 @@ private:
    }
 
 public:
+   Mesh() = delete;
    Mesh(std::vector<Vertex> verteices, std::vector<unsigned int> indeices, std::vector<Texture> textures)
        : mVertecis(verteices), mIndeices(indeices), mTextures(textures), mUseCount(1)
    {

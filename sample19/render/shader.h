@@ -29,7 +29,7 @@ private:
    }
 
 public:
-   Shader(const char *vertex_shader, const char *frag_shader);
+   Shader(const std::string& vertex_shader, const std::string& frag_shader);
    Shader(const Shader &src)
    {
       if (&src == this)
@@ -88,7 +88,7 @@ public:
    ~Shader();
 };
 
-Shader::Shader(const char *vertex_shader, const char *frag_shader)
+Shader::Shader(const std::string &vertex_shader, const std::string &frag_shader)
     : mProgram(0)
 {
    std::string vertextCode;
