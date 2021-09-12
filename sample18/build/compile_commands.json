@@ -1,0 +1,12 @@
+[
+{
+  "directory": "/home/lovefantasy/Desktop/LearnOpenGL/sample18/build",
+  "command": "/usr/bin/c++ -isystem /home/lovefantasy/Desktop/LearnOpenGL/glm -std=c++11 -g -o CMakeFiles/sample1.dir/main.cpp.o -c /home/lovefantasy/Desktop/LearnOpenGL/sample18/main.cpp",
+  "file": "/home/lovefantasy/Desktop/LearnOpenGL/sample18/main.cpp"
+},
+{
+  "directory": "/home/lovefantasy/Desktop/LearnOpenGL/sample18/build",
+  "command": "/usr/bin/c++ -isystem /home/lovefantasy/Desktop/LearnOpenGL/glm -std=c++11 -g -o CMakeFiles/sample1.dir/stb_image.cpp.o -c /home/lovefantasy/Desktop/LearnOpenGL/sample18/stb_image.cpp",
+  "file": "/home/lovefantasy/Desktop/LearnOpenGL/sample18/stb_image.cpp"
+}
+]
