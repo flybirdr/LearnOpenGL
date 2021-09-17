@@ -16,7 +16,7 @@
 #include <iostream>
 #include <sstream>
 #include <stb/stb_image.h>
-#include<unistd.h>
+#include <unistd.h>
 
 const int screenWidth = 1440;
 const int screenHeight = 900;
@@ -272,7 +272,8 @@ int main(int, char **)
       pwd + "/skybox/front.jpg",
       pwd + "/skybox/back.jpg"};
 
-  GLuint skyboxTexture = loadCubeTexture(skyBoxTextures);
+  GLuint __attribute__((unused)) skyboxTexture = loadCubeTexture(skyBoxTextures);
+
   Shader skyboxShader(pwd + "/render/skybox.vs", pwd + "/render/skybox.fs");
   skyboxShader.setInt("uSkybox", 0);
   float skyboxVertices[] = {
@@ -354,6 +355,18 @@ int main(int, char **)
   glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4), glm::value_ptr(projection));
   glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
+  Shader modelNormalShader(pwd + "/render/normal.vs", pwd + "/render/normal.gs", pwd + "/render/normal.fs");
+  
+  Shader houseShader(pwd + "/render/house.vs", pwd + "/render/house.gs", pwd + "/render/house.fs");
+
+  uMatriesIndex = glGetUniformBlockIndex(houseShader.program(), "Matrices");
+  glUniformBlockBinding(houseShader.program(), uMatriesIndex, 2);
+  GLfloat houseVertices[] = {
+      -0.5f, -0.5f, 0.3f};
+  GLfloat houseColor[] = {
+      0.5f, 0.5f, 0.0f
+      };
+
   while (!glfwWindowShouldClose(window))
   {
 
@@ -377,6 +390,7 @@ int main(int, char **)
     modelShader.use();
     modelShader.setMat4("model", glm::value_ptr(model));
     modelShader.setVec2("singleColor", 0.0f, 0.0f);
+    modelShader.setFloat("time", glfwGetTime());
 
     glStencilFunc(GL_ALWAYS, 1, 0xFF);
     glStencilMask(0xFF);
@@ -392,6 +406,7 @@ int main(int, char **)
     glStencilMask(0xFF);
     glStencilFunc(GL_ALWAYS, 0, 0xFF);
     glEnable(GL_DEPTH_TEST);
+    // glDepthFunc(GL_GREATER);
 
     modelShader.setMat4("model", glm::value_ptr(model));
     modelShader.setVec2("singleColor", 0.0f, 0.0f);
@@ -399,6 +414,9 @@ int main(int, char **)
 
     modelShader.setMat4("model", glm::value_ptr(model));
     cube.draw(modelShader);
+
+    modelObj.draw(modelNormalShader);
+    cube.draw(modelNormalShader);
 
     faceShader.use();
 
@@ -423,6 +441,13 @@ int main(int, char **)
     faceModel = glm::translate(model, glm::vec3(1.3f, 5.0f, 6.0f));
     faceShader.setMat4("model", glm::value_ptr(faceModel));
     glDrawElements(GL_TRIANGLES, faceVerteices.size(), GL_UNSIGNED_INT, 0);
+
+    houseShader.use();
+    glVertexAttribPointer(0, sizeof(houseVertices), GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), houseVertices);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(1, sizeof(houseColor), GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), houseColor);
+    glEnableVertexAttribArray(1);
+    glDrawArrays(GL_POINTS, 0, 1);
 
     // // glDepthMask(GL_FALSE);
     // glDepthFunc(GL_LEQUAL);
@@ -518,7 +543,7 @@ GLuint loadCubeTexture(std::vector<std::string> &textures)
   glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
   glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 
-  for (int i = 0; i < textures.size(); i++)
+  for (size_t i = 0; i < textures.size(); i++)
   {
     const std::string &path = textures[i];
     int width, height, channels;

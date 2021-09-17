@@ -5,6 +5,7 @@ set(glm_DIR ../glm)
 find_package(glm REQUIRED)
 
 add_definitions(-DCWD="${CMAKE_SOURCE_DIR}";)
+# add_definitions(-D_unused __attribute__((unused)))
 add_subdirectory(stb)
 
 include_directories(.)
@@ -12,7 +13,7 @@ include(CTest)
 enable_testing()
 
 
-set(CMAKE_CXX_FLAGS "-std=c++11" )
+set(CMAKE_CXX_FLAGS "-std=c++11 -Wall -Werror" )
 
 add_executable(sample1 main.cpp)
 
