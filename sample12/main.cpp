@@ -33,6 +33,9 @@ int main(int, char **)
   glfwInit();
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+#ifdef __APPLE__
+  glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // uncomment this statement to fix compilation on OS X
+#endif
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
   GLFWwindow *window = glfwCreateWindow(screenWidth, screenHeight, "LearnOpenGL", NULL, NULL);
@@ -122,7 +125,7 @@ int main(int, char **)
   shader.use();
   shader.setVec3("objectColor", 1.0f, 0.5f, 0.31f);
   shader.setVec3("lightColor", 1.0f, 1.0f, 1.0f);
-  shader.setVec3("lightPos", 2.0f, 2.0f, 2.0f); //1.2f, 1.0f, 2.0f
+  shader.setVec3("lightPos", 2.0f, 2.0f, 2.0f); // 1.2f, 1.0f, 2.0f
   shader.setVec3("ambientColor", 0.1f, 0.1f, 0.1f);
   shader.setVec3("viewPos", glm::value_ptr(camera.getPosition()));
   shader.setVec2("strength", 0.5f, 0.0f);

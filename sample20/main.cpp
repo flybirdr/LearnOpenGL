@@ -23,7 +23,7 @@ float lastTime = 0;
 bool firstMouse = true;
 float lastX;
 float lastY;
-//绝对路径和相对路径同时出现std会异常
+// 绝对路径和相对路径同时出现std会异常
 std::string pwd = "/home/lovefantasy/Desktop/LearnOpenGL/sample20";
 
 Camera camera(glm::vec3(1.0f, 5.0f, 8.0f));
@@ -38,6 +38,9 @@ int main(int, char **)
   glfwInit();
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+#ifdef __APPLE__
+  glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // uncomment this statement to fix compilation on OS X
+#endif
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
   GLFWwindow *window = glfwCreateWindow(screenWidth, screenHeight, "LearnOpenGL", NULL, NULL);
@@ -270,8 +273,7 @@ int main(int, char **)
     float zoom = camera.getZoom();
     model = glm::scale(model, glm::vec3(zoom, zoom, zoom));
     model = glm::rotate(model, glm::radians(30.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-    
-    
+
     glBindFramebuffer(GL_FRAMEBUFFER, fbo);
     glViewport(0, 0, screenWidth, screenHeight);
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);

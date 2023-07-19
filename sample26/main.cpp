@@ -44,6 +44,9 @@ int main(int, char **)
   glfwInit();
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+#ifdef __APPLE__
+  glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // uncomment this statement to fix compilation on OS X
+#endif
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
   GLFWwindow *window = glfwCreateWindow(screenWidth, screenHeight, "LearnOpenGL", NULL, NULL);
@@ -128,7 +131,7 @@ int main(int, char **)
   glEnable(GL_BLEND);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-  //warning 不是float也会有问题的啊
+  // warning 不是float也会有问题的啊
   glm::mat4 textProjection = glm::ortho(0.0f, static_cast<GLfloat>(screenWidth), 0.0f, static_cast<GLfloat>(screenHeight));
 
   while (!glfwWindowShouldClose(window))
@@ -136,9 +139,9 @@ int main(int, char **)
 
     processInput(window);
 
-    glViewport(0,0,screenWidth,screenHeight);
+    glViewport(0, 0, screenWidth, screenHeight);
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT );
+    glClear(GL_COLOR_BUFFER_BIT);
 
     glm::mat4 view = camera.getViewMatrix();
 

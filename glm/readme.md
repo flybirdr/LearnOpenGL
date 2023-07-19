@@ -10,7 +10,7 @@ This library works perfectly with *[OpenGL](https://www.opengl.org)* but it also
 
 *GLM* is written in C++98 but can take advantage of C++11 when supported by the compiler. It is a platform independent library with no dependence and it officially supports the following compilers:
 - [Apple Clang 4.0](https://developer.apple.com/library/mac/documentation/CompilerTools/Conceptual/LLVMCompilerOverview/index.html) and higher
-- [GCC](http://gcc.gnu.org/) 4.2 and higher
+- [GCC](http://gcc.gnu.org/) 4.2 and highercd
 - [Intel C++ Composer](https://software.intel.com/en-us/intel-compilers) XE 2013 and higher
 - [LLVM](http://llvm.org/) 3.0 and higher
 - [Visual C++](http://www.visualstudio.com/) 2010 and higher

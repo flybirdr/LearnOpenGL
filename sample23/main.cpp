@@ -24,7 +24,7 @@ float lastTime = 0;
 bool firstMouse = true;
 float lastX;
 float lastY;
-//绝对路径和相对路径同时出现std会异常
+// 绝对路径和相对路径同时出现std会异常
 std::string pwd = CWD;
 
 Camera camera(glm::vec3(1.0f, 5.0f, 8.0f));
@@ -42,6 +42,9 @@ int main(int, char **)
   glfwInit();
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+#ifdef __APPLE__
+  glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // uncomment this statement to fix compilation on OS X
+#endif
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
   GLFWwindow *window = glfwCreateWindow(screenWidth, screenHeight, "LearnOpenGL", NULL, NULL);
@@ -356,7 +359,7 @@ int main(int, char **)
   glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
   Shader modelNormalShader(pwd + "/render/normal.vs", pwd + "/render/normal.gs", pwd + "/render/normal.fs");
-  
+
   Shader houseShader(pwd + "/render/house.vs", pwd + "/render/house.gs", pwd + "/render/house.fs");
 
   uMatriesIndex = glGetUniformBlockIndex(houseShader.program(), "Matrices");
@@ -364,8 +367,7 @@ int main(int, char **)
   GLfloat houseVertices[] = {
       -0.5f, -0.5f, 0.3f};
   GLfloat houseColor[] = {
-      0.5f, 0.5f, 0.0f
-      };
+      0.5f, 0.5f, 0.0f};
 
   while (!glfwWindowShouldClose(window))
   {

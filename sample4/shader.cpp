@@ -1,30 +1,4 @@
-#ifndef SHADER_H
-#define SHADER_H
-
-#include <fstream>
-#include <glad/glad.h>
-#include <iostream>
-#include <sstream>
-#include <string>
-
-class Shader
-{
-private:
-   GLuint mProgram;
-
-public:
-   Shader(const char *vertex_shader, const char *frag_shader);
-   GLuint program();
-   void use();
-   void setBool(const std::string &name, bool value) const;
-   void setInt(const std::string &name, int value) const;
-   void setFloat(const std::string &name, float value) const;
-   void setMat4(const std::string &name, GLfloat *mat4) const;
-   void setVec2(const std::string &name, float x, float y);
-   void setVec3(const std::string &name, float x, float y, float z);
-   void setVec3(const std::string &name, const float *v);
-   ~Shader();
-};
+#include "shader.h"
 
 Shader::Shader(const char *vertex_shader, const char *frag_shader)
 {
@@ -54,8 +28,6 @@ Shader::Shader(const char *vertex_shader, const char *frag_shader)
    }
    const char *vShaderCode = vertextCode.c_str();
    const char *fShaderCode = fragCode.c_str();
-   std::cout << vShaderCode << std::endl;
-   std::cout << fShaderCode << std::endl;
    GLuint vShader = glCreateShader(GL_VERTEX_SHADER);
    glShaderSource(vShader, 1, &vShaderCode, NULL);
    glCompileShader(vShader);
@@ -95,11 +67,6 @@ Shader::Shader(const char *vertex_shader, const char *frag_shader)
    glDeleteShader(fShader);
 }
 
-GLuint Shader::program()
-{
-   return mProgram;
-}
-
 void Shader::use()
 {
    glUseProgram(mProgram);
@@ -117,24 +84,8 @@ void Shader::setFloat(const std::string &name, float value) const
 {
    glUniform1f(glGetUniformLocation(mProgram, name.c_str()), value);
 }
-void Shader::setMat4(const std::string &name, GLfloat *mat4) const
-{
-   glUniformMatrix4fv(glGetUniformLocation(mProgram, name.c_str()), 1, GL_FALSE, mat4);
-}
-void Shader::setVec2(const std::string &name, float x, float y)
-{
-   glUniform2f(glGetUniformLocation(mProgram, name.c_str()), x, y);
-}
-void Shader::setVec3(const std::string &name, float x, float y, float z)
-{
-   glUniform3f(glGetUniformLocation(mProgram, name.c_str()), x, y, z);
-}
-void Shader::setVec3(const std::string &name, const float *v)
-{
-   glUniform3fv(glGetUniformLocation(mProgram, name.c_str()), 1, v);
-}
+
 Shader::~Shader()
 {
    glDeleteProgram(mProgram);
 }
-#endif

@@ -36,6 +36,9 @@ int main(int, char **)
   glfwInit();
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+#ifdef __APPLE__
+  glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // uncomment this statement to fix compilation on OS X
+#endif
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
   GLFWwindow *window = glfwCreateWindow(screenWidth, screenHeight, "LearnOpenGL", NULL, NULL);
@@ -107,7 +110,7 @@ int main(int, char **)
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     shader.use();
-    
+
     glm::mat4 view = camera.getViewMatrix();
     shader.setMat4("view", glm::value_ptr(view));
 
@@ -117,7 +120,7 @@ int main(int, char **)
     glm::mat4 model = glm::mat4(1.0f);
     float zoom = camera.getZoom();
     model = glm::scale(model, glm::vec3(zoom, zoom, zoom));
-    model = glm::rotate(model, glm::radians(30.0f),glm::vec3(0.0f,1.0f,0.0f));
+    model = glm::rotate(model, glm::radians(30.0f), glm::vec3(0.0f, 1.0f, 0.0f));
     shader.setMat4("model", glm::value_ptr(model));
 
     objModel.draw(shader);

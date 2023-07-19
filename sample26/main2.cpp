@@ -45,6 +45,9 @@ int main(int, char **)
   glfwInit();
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+#ifdef __APPLE__
+  glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // uncomment this statement to fix compilation on OS X
+#endif
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
   GLFWwindow *window = glfwCreateWindow(screenWidth, screenHeight, "LearnOpenGL", NULL, NULL);
@@ -77,7 +80,7 @@ int main(int, char **)
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
   // Compile and setup the shader
-  Shader shader(cwd+"/freetype.vs", cwd+"/freetype.fs");
+  Shader shader(cwd + "/freetype.vs", cwd + "/freetype.fs");
   glm::mat4 projection = glm::ortho(0.0f, static_cast<GLfloat>(screenWidth), 0.0f, static_cast<GLfloat>(screenHeight));
   shader.use();
   glUniformMatrix4fv(glGetUniformLocation(shader.program(), "projection"), 1, GL_FALSE, glm::value_ptr(projection));
@@ -90,7 +93,7 @@ int main(int, char **)
 
   // Load font as face
   FT_Face face;
-  if (FT_New_Face(ft, (cwd+"/msyh.ttf").c_str(), 0, &face))
+  if (FT_New_Face(ft, (cwd + "/msyh.ttf").c_str(), 0, &face))
     std::cout << "ERROR::FREETYPE: Failed to load font" << std::endl;
 
   // Set size to load glyphs as

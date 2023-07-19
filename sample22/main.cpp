@@ -16,7 +16,7 @@
 #include <iostream>
 #include <sstream>
 #include <stb/stb_image.h>
-#include<unistd.h>
+#include <unistd.h>
 
 const int screenWidth = 1440;
 const int screenHeight = 900;
@@ -24,7 +24,7 @@ float lastTime = 0;
 bool firstMouse = true;
 float lastX;
 float lastY;
-//绝对路径和相对路径同时出现std会异常
+// 绝对路径和相对路径同时出现std会异常
 std::string pwd = CWD;
 
 Camera camera(glm::vec3(1.0f, 5.0f, 8.0f));
@@ -42,6 +42,9 @@ int main(int, char **)
   glfwInit();
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+#ifdef __APPLE__
+  glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // uncomment this statement to fix compilation on OS X
+#endif
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
   GLFWwindow *window = glfwCreateWindow(screenWidth, screenHeight, "LearnOpenGL", NULL, NULL);

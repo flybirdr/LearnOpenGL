@@ -9,6 +9,9 @@ int main(int, char **)
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+#ifdef __APPLE__
+    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // uncomment this statement to fix compilation on OS X
+#endif
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
     GLFWwindow *window = glfwCreateWindow(800, 600, "LearnOpenGL", NULL, NULL);
@@ -84,8 +87,7 @@ int main(int, char **)
     GLfloat vertices[] = {-0.5f, -0.5f, 0.0f,
                           0.5f, -0.5f, 0.0f,
                           0.5f, 0.5f, 0.0f,
-                          -0.5f, 0.5f, 0.0f
-                          };
+                          -0.5f, 0.5f, 0.0f};
 
     GLuint indices[] = {0, 1, 2, 3, 0, 2};
 
@@ -120,7 +122,7 @@ int main(int, char **)
         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
         glBindVertexArray(vao);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-        glDrawElements(GL_TRIANGLES, 6,GL_UNSIGNED_INT,0);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
         glfwSwapBuffers(window);
         glfwPollEvents();

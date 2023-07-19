@@ -38,6 +38,9 @@ int main(int, char **)
   glfwInit();
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+#ifdef __APPLE__
+  glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // uncomment this statement to fix compilation on OS X
+#endif
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
   GLFWwindow *window = glfwCreateWindow(screenWidth, screenHeight, "LearnOpenGL", NULL, NULL);
@@ -134,13 +137,13 @@ int main(int, char **)
   // glGenVertexArrays(1, &rockVao);
 
   std::vector<Mesh> &meshes = rockModel.getMeshes();
-  for (size_t i = 0; i <meshes.size(); i++)
+  for (size_t i = 0; i < meshes.size(); i++)
   {
     Mesh &mesh = meshes[i];
     GLuint vao = mesh.getVao();
     glBindVertexArray(vao);
     GLsizei mat4Size = sizeof(glm::mat4);
-    GLsizei vec4Size = mat4Size/4;
+    GLsizei vec4Size = mat4Size / 4;
 
     glBindBuffer(GL_ARRAY_BUFFER, buffer);
     glEnableVertexAttribArray(3);
@@ -180,7 +183,6 @@ int main(int, char **)
     planetShader.setMat4("projection", glm::value_ptr(projection));
     planetShader.setMat4("view", glm::value_ptr(view));
 
-
     glm::mat4 model = glm::mat4(1.0f);
     float zoom = camera.getZoom();
     model = glm::scale(model, glm::vec3(zoom, zoom, zoom));
@@ -204,7 +206,7 @@ int main(int, char **)
       // glBindVertexArray(rockVao);
       glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, meshes[i].getEbo());
       std::vector<unsigned int> &indcies = meshes[i].getIndices();
-      glDrawElementsInstanced(GL_TRIANGLES, indcies.size(), GL_UNSIGNED_INT, 0,amount);
+      glDrawElementsInstanced(GL_TRIANGLES, indcies.size(), GL_UNSIGNED_INT, 0, amount);
       glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
       glBindVertexArray(0);
     }

@@ -23,7 +23,7 @@ float lastTime = 0;
 bool firstMouse = true;
 float lastX;
 float lastY;
-//绝对路径和相对路径同时出现std会异常
+// 绝对路径和相对路径同时出现std会异常
 std::string pwd = "/home/lovefantasy/Desktop/LearnOpenGL/sample21";
 
 Camera camera(glm::vec3(1.0f, 5.0f, 8.0f));
@@ -39,6 +39,9 @@ int main(int, char **)
   glfwInit();
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+#ifdef __APPLE__
+  glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // uncomment this statement to fix compilation on OS X
+#endif
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
   GLFWwindow *window = glfwCreateWindow(screenWidth, screenHeight, "LearnOpenGL", NULL, NULL);
@@ -270,7 +273,7 @@ int main(int, char **)
       pwd + "/skybox/back.jpg"};
 
   GLuint skyboxTexture = loadCubeTexture(skyBoxTextures);
-  Shader skyboxShader(pwd + "/render/skybox.vs",pwd+"/render/skybox.fs" );
+  Shader skyboxShader(pwd + "/render/skybox.vs", pwd + "/render/skybox.fs");
   skyboxShader.setInt("uSkybox", 0);
   float skyboxVertices[] = {
       // positions
@@ -319,7 +322,7 @@ int main(int, char **)
   GLuint skyboxVao, skyboxVbo;
   glGenBuffers(1, &skyboxVbo);
   glBindBuffer(GL_ARRAY_BUFFER, skyboxVbo);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(skyboxVertices),  skyboxVertices, GL_STATIC_DRAW);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(skyboxVertices), skyboxVertices, GL_STATIC_DRAW);
   glBindBuffer(GL_ARRAY_BUFFER, 0);
 
   glGenVertexArrays(1, &skyboxVao);
@@ -367,7 +370,6 @@ int main(int, char **)
     glStencilFunc(GL_ALWAYS, 0, 0xFF);
     glEnable(GL_DEPTH_TEST);
 
-   
     modelShader.setMat4("model", glm::value_ptr(model));
     modelShader.setVec2("singleColor", 0.0f, 0.0f);
     modelObj.draw(modelShader);
@@ -410,7 +412,7 @@ int main(int, char **)
     glm::mat4 skyboxView = glm::mat4(glm::mat3(view));
     skyboxShader.setMat4("view", glm::value_ptr(skyboxView));
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_CUBE_MAP,skyboxTexture);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, skyboxTexture);
     glBindVertexArray(skyboxVao);
     glDrawArrays(GL_TRIANGLES, 0, 36);
     glBindVertexArray(0);
@@ -418,7 +420,6 @@ int main(int, char **)
     // glDepthMask(GL_TRUE);
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
 
     glClearColor(0.5f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
@@ -428,7 +429,6 @@ int main(int, char **)
     glBindTexture(GL_TEXTURE_2D, fboTexture);
     glBindVertexArray(finalVao);
     glDrawElements(GL_TRIANGLES, finalIndeices.size(), GL_UNSIGNED_INT, 0);
-
 
     glfwSwapBuffers(window);
     glfwPollEvents();
@@ -513,7 +513,7 @@ GLuint loadCubeTexture(std::vector<std::string> &textures)
       std::cerr << "failed to load " << path << std::endl;
     }
   }
-  
+
   glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
   return texture;
 }

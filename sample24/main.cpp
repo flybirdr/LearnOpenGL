@@ -24,7 +24,7 @@ bool firstMouse = true;
 float lastX;
 float lastY;
 
-std::string cwd=CWD;
+std::string cwd = CWD;
 
 Camera camera(glm::vec3(0.0f, 3.0f, 4.0f));
 
@@ -38,6 +38,9 @@ int main(int, char **)
   glfwInit();
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+#ifdef __APPLE__
+  glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // uncomment this statement to fix compilation on OS X
+#endif
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
   glfwWindowHint(GLFW_SAMPLES, 4);
 
@@ -90,7 +93,7 @@ int main(int, char **)
   shader.setVec3("spotLight.diffuse", 0.5f, 0.5f, 0.5f);
   shader.setVec3("spotLight.specular", 1.0f, 1.0f, 1.0f);
 
-  Model objModel(cwd+"/../nanosuit/nanosuit.obj");
+  Model objModel(cwd + "/../nanosuit/nanosuit.obj");
   // Model objModel("/home/lovefantasy/Desktop/LearnOpenGL/sample17/91-21-iphonex/Iphone seceond version finished.obj");
   // Model objModel("/home/lovefantasy/Desktop/LearnOpenGL/sample17/97-free_091_aya_obj/091_W_Aya_30K.obj");
   // Model objModel("/home/lovefantasy/Desktop/LearnOpenGL/sample17/mountain/mount.blend1.obj");

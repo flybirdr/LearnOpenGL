@@ -1,17 +1,22 @@
+#include <GL/glew.h>
+#include <GLFW/glfw3.h>
 #include <iostream>
-#include<GL/glew.h>
-#include<GLFW/glfw3.h>
+
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
 void processInput(GLFWwindow *window);
 
-int main(int, char**) {
+int main(int, char **)
+{
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+#ifdef __APPLE__
+    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // uncomment this statement to fix compilation on OS X
+#endif
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
     GLFWwindow *window = glfwCreateWindow(800, 600, "LearnOpenGL", NULL, NULL);
-    if (window==NULL)
+    if (window == NULL)
     {
         std::cout << "failed to create gl window!" << std::endl;
         glfwTerminate();
@@ -34,14 +39,15 @@ int main(int, char**) {
     return 0;
 }
 
-void processInput(GLFWwindow* window){
-    if (glfwGetKey(window,GLFW_KEY_ESCAPE)==GLFW_PRESS)
+void processInput(GLFWwindow *window)
+{
+    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
     {
         glfwSetWindowShouldClose(window, true);
     }
 }
 
-
-void framebuffer_size_callback(GLFWwindow* window,int width,int height){
-    glViewport(0, 0, width/2, height/2);
+void framebuffer_size_callback(GLFWwindow *window, int width, int height)
+{
+    glViewport(0, 0, width / 2, height / 2);
 }

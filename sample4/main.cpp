@@ -14,6 +14,9 @@ int main(int, char **)
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+#ifdef __APPLE__
+    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // uncomment this statement to fix compilation on OS X
+#endif
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
     GLFWwindow *window = glfwCreateWindow(800, 600, "LearnOpenGL", NULL, NULL);
@@ -45,8 +48,7 @@ int main(int, char **)
         std::cout << "error: vtx shader compile failed:" << infoLog << std::endl;
     }
 
-    
-    //todo 这里为啥如果不拆开写得到的就是乱码？？？？？？
+    // todo 这里为啥如果不拆开写得到的就是乱码？？？？？？
     std::string str = readFile("../frag_2.frag");
     const GLchar *fragShaderSrc = str.c_str();
 
@@ -95,7 +97,7 @@ int main(int, char **)
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), 0);
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (void*)(3*sizeof(GLfloat)));
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (void *)(3 * sizeof(GLfloat)));
     glEnableVertexAttribArray(1);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
@@ -114,7 +116,7 @@ int main(int, char **)
         glUniform4f(colorLocation, 0.f, greenValue, 0.f, 0.f);
         // glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
         glBindVertexArray(vao);
-        glDrawArrays(GL_TRIANGLES,0,3);
+        glDrawArrays(GL_TRIANGLES, 0, 3);
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
@@ -139,11 +141,12 @@ void framebuffer_size_callback(GLFWwindow *window, int width, int height)
     glViewport(0, 0, width, height);
 }
 
-std::string readFile(const char* fileName){
+std::string readFile(const char *fileName)
+{
     std::ifstream ifs(fileName);
     std::ostringstream buffer;
     char ch;
-    while (buffer&&ifs.get(ch))
+    while (buffer && ifs.get(ch))
     {
         buffer.put(ch);
     }

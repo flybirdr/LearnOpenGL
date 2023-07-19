@@ -11,22 +11,28 @@ void framebuffer_size_callback(GLFWwindow *window, int width, int height);
 void processInput(GLFWwindow *window);
 std::string readFile(const char *fileName);
 
-int main(int, char **) {
+int main(int, char **)
+{
   glfwInit();
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+#ifdef __APPLE__
+  glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // uncomment this statement to fix compilation on OS X
+#endif
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
   GLFWwindow *window = glfwCreateWindow(800, 600, "LearnOpenGL", NULL, NULL);
-  if (window == NULL) {
+  if (window == NULL)
+  {
     std::cout << "failed to create gl window!" << std::endl;
     glfwTerminate();
     return -1;
   }
   glfwMakeContextCurrent(window);
   glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-  
-  if (glewInit() != GLEW_OK) {
+
+  if (glewInit() != GLEW_OK)
+  {
     std::cout << "glew init failed" << std::endl;
     return -1;
   }
@@ -35,10 +41,10 @@ int main(int, char **) {
 
   GLfloat vertices[] = {
       //     ---- 位置 ----       ---- 颜色 ----     - 纹理坐标 -
-      0.5f,  0.5f,  0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, // 右上
-      0.5f,  -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, // 右下
+      0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f,   // 右上
+      0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f,  // 右下
       -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, // 左下
-      -0.5f, 0.5f,  0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f  // 左上
+      -0.5f, 0.5f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f   // 左上
   };
 
   GLint indcies[] = {0, 1, 3, 1, 2, 3};
@@ -51,18 +57,18 @@ int main(int, char **) {
 
   GLuint ebo;
   glGenBuffers(1, &ebo);
- 
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,0);
+
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
   GLuint vao;
   glGenVertexArrays(1, &vao);
   glBindVertexArray(vao);
 
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indcies), indcies,GL_STATIC_DRAW);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indcies), indcies, GL_STATIC_DRAW);
 
   glBindBuffer(GL_ARRAY_BUFFER, vbo);
-  
+
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), 0);
   glEnableVertexAttribArray(0);
   glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat),
@@ -84,11 +90,14 @@ int main(int, char **) {
   int width, height, channels;
   unsigned char *data =
       stbi_load("../texture1.jpg", &width, &height, &channels, 0);
-  if (data) {
+  if (data)
+  {
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB,
                  GL_UNSIGNED_BYTE, data);
     glGenerateMipmap(GL_TEXTURE_2D);
-  } else {
+  }
+  else
+  {
     std::cerr << "failed to load"
               << " "
               << "texture1.jpg" << std::endl;
@@ -107,11 +116,14 @@ int main(int, char **) {
   stbi_set_flip_vertically_on_load(true);
   data =
       stbi_load("../texture2.png", &width, &height, &channels, 0);
-  if (data) {
+  if (data)
+  {
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA,
                  GL_UNSIGNED_BYTE, data);
     glGenerateMipmap(GL_TEXTURE_2D);
-  } else {
+  }
+  else
+  {
     std::cerr << "failed to load"
               << " "
               << "texture2.png" << std::endl;
@@ -123,7 +135,8 @@ int main(int, char **) {
   shader.setInt("texture1", 0);
   shader.setInt("texture2", 1);
 
-  while (!glfwWindowShouldClose(window)) {
+  while (!glfwWindowShouldClose(window))
+  {
     processInput(window);
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
@@ -152,21 +165,26 @@ int main(int, char **) {
   return 0;
 }
 
-void processInput(GLFWwindow *window) {
-  if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
+void processInput(GLFWwindow *window)
+{
+  if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+  {
     glfwSetWindowShouldClose(window, true);
   }
 }
 
-void framebuffer_size_callback(GLFWwindow *window, int width, int height) {
+void framebuffer_size_callback(GLFWwindow *window, int width, int height)
+{
   glViewport(0, 0, width, height);
 }
 
-std::string readFile(const char *fileName) {
+std::string readFile(const char *fileName)
+{
   std::ifstream ifs(fileName);
   std::ostringstream buffer;
   char ch;
-  while (buffer && ifs.get(ch)) {
+  while (buffer && ifs.get(ch))
+  {
     buffer.put(ch);
   }
   return buffer.str();
