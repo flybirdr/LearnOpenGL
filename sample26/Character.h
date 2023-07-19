@@ -9,7 +9,7 @@ struct Character
    GLuint textureId;
    glm::ivec2 size;
    glm::ivec2 bearing;
-   GLuint advance;
+   long advance;
 };
 
 #endif

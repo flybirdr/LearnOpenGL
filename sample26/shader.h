@@ -6,7 +6,7 @@
 #include <iostream>
 #include <sstream>
 #include <string>
-
+#include "texture.h"
 class Shader
 {
 private:
@@ -85,6 +85,7 @@ public:
    void setVec2(const std::string &name, float x, float y);
    void setVec3(const std::string &name, float x, float y, float z);
    void setVec3(const std::string &name, const float *v);
+   void setTexture(const std::string &name, Texture& texture);
    ~Shader();
 };
 

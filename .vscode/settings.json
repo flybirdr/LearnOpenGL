@@ -9,6 +9,8 @@
         "cmath": "cpp",
         "string": "cpp",
         "fstream": "cpp",
-        "vector": "cpp"
+        "vector": "cpp",
+        "type_traits": "cpp",
+        "iterator": "cpp"
     }
 }

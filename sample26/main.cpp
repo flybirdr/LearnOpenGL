@@ -20,6 +20,7 @@
 #include <iostream>
 #include <map>
 #include <sstream>
+#include <unistd.h>
 
 const int screenWidth = 1440;
 const int screenHeight = 900;
@@ -28,7 +29,7 @@ bool firstMouse = true;
 float lastX;
 float lastY;
 
-std::string cwd = CWD;
+std::string cwd("");
 
 Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
 std::map<GLchar, Character> characters;
@@ -41,6 +42,10 @@ void renderText(Shader &shader, GLuint vao, GLuint vbo, std::string text, GLfloa
 
 int main(int, char **)
 {
+  char cwdBuffer[1024];
+  getcwd(cwdBuffer, 1024);
+  cwd = std::string(cwdBuffer) + "/../sample26";
+  std::cout << ">>> cwd=" << cwd << std::endl;
   glfwInit();
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
