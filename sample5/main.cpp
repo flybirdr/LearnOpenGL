@@ -1,4 +1,4 @@
-#include "shader.h"
+#include <Shader.h>
 #include "stb_image.h"
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -6,6 +6,8 @@
 #include <fstream>
 #include <iostream>
 #include <sstream>
+
+using namespace glkit;
 
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
 void processInput(GLFWwindow *window);

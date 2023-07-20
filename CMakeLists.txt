@@ -21,6 +21,8 @@ set(CMAKE_CXX_FLAGS "-std=c++11" )
 
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_SOURCE_DIR}/bin)
 
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/glkit)
+
 #mac os 需要使用brew 安装以下依赖
 if (APPLE)
     #brew install glew

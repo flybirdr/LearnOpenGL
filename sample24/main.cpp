@@ -1,13 +1,12 @@
 #define GLFW_INCLUDE_NONE
 #define GLM_FORCE_MESSAGES
-#include "camera.h"
-#include "mesh.h"
-#include "model.h"
-#include "shader.h"
-#include "stb_image.h"
-#include "texture.h"
-#include "vertex.h"
+#include <Camera.h>
 #include <GLFW/glfw3.h>
+#include <Mesh.h>
+#include <Model.h>
+#include <Shader.h>
+#include <Texture.h>
+#include <Vertex.h>
 #include <cmath>
 #include <fstream>
 #include <glad/glad.h>
@@ -16,6 +15,10 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <iostream>
 #include <sstream>
+#include <stb_image.h>
+#include <unistd.h>
+
+using namespace glkit;
 
 const int screenWidth = 1440;
 const int screenHeight = 900;
@@ -24,7 +27,7 @@ bool firstMouse = true;
 float lastX;
 float lastY;
 
-std::string cwd = CWD;
+std::string cwd;
 
 Camera camera(glm::vec3(0.0f, 3.0f, 4.0f));
 
@@ -35,6 +38,12 @@ void scrollCallback(GLFWwindow *window, double xoffset, double yoffset);
 
 int main(int, char **)
 {
+
+  char cwdBuffer[1024];
+  getcwd(cwdBuffer, 1024);
+  cwd = std::string(cwdBuffer) + "/../sample26";
+  std::cout << ">>> cwd=" << cwd << std::endl;
+
   glfwInit();
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -167,19 +176,19 @@ void processInput(GLFWwindow *window)
   }
   else if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
   {
-    camera.processKeyBoard(FORWARD, deltaTime);
+    camera.processKeyBoard(Camera::FORWARD, deltaTime);
   }
   else if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
   {
-    camera.processKeyBoard(BACKWARD, deltaTime);
+    camera.processKeyBoard(Camera::BACKWARD, deltaTime);
   }
   else if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
   {
-    camera.processKeyBoard(LEFT, deltaTime);
+    camera.processKeyBoard(Camera::LEFT, deltaTime);
   }
   else if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
   {
-    camera.processKeyBoard(RIGHT, deltaTime);
+    camera.processKeyBoard(Camera::RIGHT, deltaTime);
   }
 }
 void mouseCallback(GLFWwindow *window, double xpos, double ypos)

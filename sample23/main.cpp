@@ -35,13 +35,14 @@ void framebuffer_size_callback(GLFWwindow *window, int width, int height);
 void processInput(GLFWwindow *window);
 void mouseCallback(GLFWwindow *window, double xpos, double ypos);
 void scrollCallback(GLFWwindow *window, double xoffset, double yoffset);
+GLuint loadCubeTexture(std::vector<std::string> &textures);
 
 int main(int, char **)
 {
 
   char cwdBuffer[1024];
   getcwd(cwdBuffer, 1024);
-  pwd = std::string(cwdBuffer) + "/../sample26";
+  pwd = std::string(cwdBuffer) + "/../sample23";
   std::cout << ">>> cwd=" << pwd << std::endl;
 
   glfwInit();
@@ -174,39 +175,40 @@ int main(int, char **)
   }
   Shader faceShader(pwd + "/render/face.vs", pwd + "/render/face.fs");
 
-  GLuint vao, vbo, ebo;
-  glGenBuffers(1, &vbo);
-  glGenBuffers(1, &ebo);
+  GLuint faceVao, faceVbo, faceEbo;
+  glGenBuffers(1, &faceVbo);
+  glGenBuffers(1, &faceEbo);
 
-  glBindBuffer(GL_ARRAY_BUFFER, vbo);
+  glBindBuffer(GL_ARRAY_BUFFER, faceVbo);
   glBufferData(GL_ARRAY_BUFFER, faceVerteices.size() * sizeof(Vertex), &faceVerteices[0], GL_STATIC_DRAW);
   glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, faceEbo);
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, faceIndeices.size() * sizeof(unsigned int), &faceIndeices[0], GL_STATIC_DRAW);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
-  glGenVertexArrays(1, &vao);
-  glBindVertexArray(vao);
-  glBindBuffer(GL_ARRAY_BUFFER, vbo);
+  glGenVertexArrays(1, &faceVao);
+  glBindVertexArray(faceVao);
+  glBindBuffer(GL_ARRAY_BUFFER, faceVbo);
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
   glEnableVertexAttribArray(0);
   glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)offsetof(Vertex, texCoords));
   glEnableVertexAttribArray(2);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, faceEbo);
   glBindVertexArray(0);
 
   glEnable(GL_DEPTH_TEST);
   glDepthFunc(GL_LESS);
   glEnable(GL_STENCIL_TEST);
   glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
-  glEnable(GL_CULL_FACE);
-  glCullFace(GL_BACK);
-  glFrontFace(GL_CCW);
+
+  // glEnable(GL_CULL_FACE);
+  // glCullFace(GL_BACK);
+  // glFrontFace(GL_CCW);
 
   glEnable(GL_BLEND);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-  // glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ZERO);
+  glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ZERO);
   glBlendEquation(GL_ADD);
 
   GLuint fbo, fboTexture, rbo;
@@ -215,8 +217,8 @@ int main(int, char **)
   glGenBuffers(1, &rbo);
 
   glBindTexture(GL_TEXTURE_2D, fboTexture);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, screenWidth, screenHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
@@ -271,17 +273,122 @@ int main(int, char **)
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, finalEbo);
   glBindVertexArray(0);
 
+  std::vector<std::string> skyBoxTextures{
+      pwd + "/skybox/right.jpg",
+      pwd + "/skybox/left.jpg",
+      pwd + "/skybox/top.jpg",
+      pwd + "/skybox/bottom.jpg",
+      pwd + "/skybox/front.jpg",
+      pwd + "/skybox/back.jpg"};
+
+  GLuint __attribute__((unused)) skyboxTexture = loadCubeTexture(skyBoxTextures);
+
+  Shader skyboxShader(pwd + "/render/skybox.vs", pwd + "/render/skybox.fs");
+  skyboxShader.setInt("uSkybox", 0);
+  float skyboxVertices[] = {
+      // positions
+      -1.0f, 1.0f, -1.0f,
+      -1.0f, -1.0f, -1.0f,
+      1.0f, -1.0f, -1.0f,
+      1.0f, -1.0f, -1.0f,
+      1.0f, 1.0f, -1.0f,
+      -1.0f, 1.0f, -1.0f,
+
+      -1.0f, -1.0f, 1.0f,
+      -1.0f, -1.0f, -1.0f,
+      -1.0f, 1.0f, -1.0f,
+      -1.0f, 1.0f, -1.0f,
+      -1.0f, 1.0f, 1.0f,
+      -1.0f, -1.0f, 1.0f,
+
+      1.0f, -1.0f, -1.0f,
+      1.0f, -1.0f, 1.0f,
+      1.0f, 1.0f, 1.0f,
+      1.0f, 1.0f, 1.0f,
+      1.0f, 1.0f, -1.0f,
+      1.0f, -1.0f, -1.0f,
+
+      -1.0f, -1.0f, 1.0f,
+      -1.0f, 1.0f, 1.0f,
+      1.0f, 1.0f, 1.0f,
+      1.0f, 1.0f, 1.0f,
+      1.0f, -1.0f, 1.0f,
+      -1.0f, -1.0f, 1.0f,
+
+      -1.0f, 1.0f, -1.0f,
+      1.0f, 1.0f, -1.0f,
+      1.0f, 1.0f, 1.0f,
+      1.0f, 1.0f, 1.0f,
+      -1.0f, 1.0f, 1.0f,
+      -1.0f, 1.0f, -1.0f,
+
+      -1.0f, -1.0f, -1.0f,
+      -1.0f, -1.0f, 1.0f,
+      1.0f, -1.0f, -1.0f,
+      1.0f, -1.0f, -1.0f,
+      -1.0f, -1.0f, 1.0f,
+      1.0f, -1.0f, 1.0f};
+
+  GLuint skyboxVao, skyboxVbo;
+  glGenBuffers(1, &skyboxVbo);
+  glBindBuffer(GL_ARRAY_BUFFER, skyboxVbo);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(skyboxVertices), skyboxVertices, GL_STATIC_DRAW);
+  glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+  glGenVertexArrays(1, &skyboxVao);
+  glBindVertexArray(skyboxVao);
+  glBindBuffer(GL_ARRAY_BUFFER, skyboxVbo);
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), 0);
+  glEnableVertexAttribArray(0);
+  glBindVertexArray(0);
+
+  GLuint uboMatrices;
+  glGenBuffers(1, &uboMatrices);
+  glBindBuffer(GL_UNIFORM_BUFFER, uboMatrices);
+  glBufferData(GL_UNIFORM_BUFFER, sizeof(glm::mat4) * 2, nullptr, GL_STATIC_DRAW);
+  glBindBuffer(GL_UNIFORM_BUFFER, 0);
+
+  GLuint uMatriesIndex = glGetUniformBlockIndex(faceShader.program(), "Matrices");
+  glUniformBlockBinding(faceShader.program(), uMatriesIndex, 2);
+  uMatriesIndex = glGetUniformBlockIndex(modelShader.program(), "Matrices");
+  glUniformBlockBinding(modelShader.program(), uMatriesIndex, 2);
+  uMatriesIndex = glGetUniformBlockIndex(skyboxShader.program(), "Matrices");
+  glUniformBlockBinding(skyboxShader.program(), uMatriesIndex, 2);
+
+  glBindBufferBase(GL_UNIFORM_BUFFER, 2, uboMatrices);
+  // glBindBufferRange(GL_UNIFORM_BUFFER, 2, uboMatrices, 0, sizeof(glm::mat4) * 2);
+
+  glm::mat4 projection = glm::perspective(glm::radians(45.0f), screenWidth * 1.0f / screenHeight, 0.1f, 100.0f);
+
+  glBindBuffer(GL_UNIFORM_BUFFER, uboMatrices);
+  glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4), glm::value_ptr(projection));
+  glBindBuffer(GL_UNIFORM_BUFFER, 0);
+
+  Shader modelNormalShader(pwd + "/render/normal.vs", pwd + "/render/normal.gs", pwd + "/render/normal.fs");
+
+  Shader houseShader(pwd + "/render/house.vs", pwd + "/render/house.gs", pwd + "/render/house.fs");
+
+  uMatriesIndex = glGetUniformBlockIndex(houseShader.program(), "Matrices");
+  glUniformBlockBinding(houseShader.program(), uMatriesIndex, 2);
+  GLfloat houseVertices[] = {
+      -0.5f, -0.5f, 0.3f};
+  GLfloat houseColor[] = {
+      0.5f, 0.5f, 0.0f};
+
   while (!glfwWindowShouldClose(window))
   {
 
     processInput(window);
 
     glm::mat4 view = camera.getViewMatrix();
-    glm::mat4 projection = glm::perspective(glm::radians(45.0f), screenWidth * 1.0f / screenHeight, 0.1f, 100.0f);
     glm::mat4 model = glm::mat4(1.0f);
     float zoom = camera.getZoom();
     model = glm::scale(model, glm::vec3(zoom, zoom, zoom));
     model = glm::rotate(model, glm::radians(30.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+
+    glBindBuffer(GL_UNIFORM_BUFFER, uboMatrices);
+    glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), sizeof(glm::mat4), glm::value_ptr(view));
+    glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
     glBindFramebuffer(GL_FRAMEBUFFER, fbo);
     glViewport(0, 0, screenWidth, screenHeight);
@@ -289,14 +396,14 @@ int main(int, char **)
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
     modelShader.use();
-    modelShader.setMat4("view", glm::value_ptr(view));
-    modelShader.setMat4("projection", glm::value_ptr(projection));
     modelShader.setMat4("model", glm::value_ptr(model));
     modelShader.setVec2("singleColor", 0.0f, 0.0f);
+    modelShader.setFloat("time", glfwGetTime());
 
     glStencilFunc(GL_ALWAYS, 1, 0xFF);
     glStencilMask(0xFF);
     modelObj.draw(modelShader);
+
     glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
     glStencilMask(0x00);
     glDisable(GL_DEPTH_TEST);
@@ -307,23 +414,24 @@ int main(int, char **)
     glStencilMask(0xFF);
     glStencilFunc(GL_ALWAYS, 0, 0xFF);
     glEnable(GL_DEPTH_TEST);
+    // glDepthFunc(GL_GREATER);
+
     modelShader.setMat4("model", glm::value_ptr(model));
     modelShader.setVec2("singleColor", 0.0f, 0.0f);
     modelObj.draw(modelShader);
 
-    modelShader.setMat4("view", glm::value_ptr(view));
-    modelShader.setMat4("projection", glm::value_ptr(projection));
     modelShader.setMat4("model", glm::value_ptr(model));
     cube.draw(modelShader);
 
+    modelObj.draw(modelNormalShader);
+    cube.draw(modelNormalShader);
+
     faceShader.use();
 
-    faceShader.setMat4("view", glm::value_ptr(view));
-    faceShader.setMat4("projection", glm::value_ptr(projection));
     faceShader.setInt("shader1", 4);
     glActiveTexture(GL_TEXTURE0 + 4);
     glBindTexture(GL_TEXTURE_2D, textureGrass.getTextureId());
-    glBindVertexArray(vao);
+    glBindVertexArray(faceVao);
     glm::mat4 faceModel = glm::translate(model, glm::vec3(0.0f, 5.0f, 3.0f));
     faceShader.setMat4("model", glm::value_ptr(faceModel));
     glDrawElements(GL_TRIANGLES, faceIndeices.size(), GL_UNSIGNED_INT, 0);
@@ -334,7 +442,7 @@ int main(int, char **)
 
     glActiveTexture(GL_TEXTURE0 + 4);
     glBindTexture(GL_TEXTURE_2D, textureWindow.getTextureId());
-    glBindVertexArray(vao);
+    glBindVertexArray(faceVao);
     faceModel = glm::translate(model, glm::vec3(1.8f, 5.0f, 4.0f));
     faceShader.setMat4("model", glm::value_ptr(faceModel));
     glDrawElements(GL_TRIANGLES, faceVerteices.size(), GL_UNSIGNED_INT, 0);
@@ -342,45 +450,38 @@ int main(int, char **)
     faceShader.setMat4("model", glm::value_ptr(faceModel));
     glDrawElements(GL_TRIANGLES, faceVerteices.size(), GL_UNSIGNED_INT, 0);
 
+    houseShader.use();
+    glVertexAttribPointer(0, sizeof(houseVertices), GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), houseVertices);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(1, sizeof(houseColor), GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), houseColor);
+    glEnableVertexAttribArray(1);
+    glDrawArrays(GL_POINTS, 0, 1);
+
+    // // glDepthMask(GL_FALSE);
+    // glDepthFunc(GL_LEQUAL);
+    // skyboxShader.use();
+    // glm::mat4 skyboxView = glm::mat4(glm::mat3(view));
+    // glBindBuffer(GL_UNIFORM_BUFFER, uboMatrices);
+    // glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), sizeof(glm::mat4), glm::value_ptr(skyboxView));
+    // glBindBuffer(GL_UNIFORM_BUFFER, 0);
+    // glActiveTexture(GL_TEXTURE0);
+    // glBindTexture(GL_TEXTURE_CUBE_MAP, skyboxTexture);
+    // glBindVertexArray(skyboxVao);
+    // glDrawArrays(GL_TRIANGLES, 0, 36);
+    // glBindVertexArray(0);
+    // glDepthFunc(GL_LESS);
+    // // glDepthMask(GL_TRUE);
+
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
     glClearColor(0.5f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-
     glViewport(0, 0, screenWidth, screenHeight);
     finalShader.use();
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, fboTexture);
     glBindVertexArray(finalVao);
     glDrawElements(GL_TRIANGLES, finalIndeices.size(), GL_UNSIGNED_INT, 0);
-
-    // glViewport(0, 0, screenWidth/2, screenHeight/2);
-    // finalShader.use();
-    // glActiveTexture(GL_TEXTURE0);
-    // glBindTexture(GL_TEXTURE_2D, fboTexture);
-    // glBindVertexArray(finalVao);
-    // glDrawElements(GL_TRIANGLES, finalIndeices.size(), GL_UNSIGNED_INT, 0);
-
-    // glViewport(screenWidth / 2, 0, screenWidth / 2, screenHeight / 2);
-    // finalShader.use();
-    // glActiveTexture(GL_TEXTURE0);
-    // glBindTexture(GL_TEXTURE_2D, fboTexture);
-    // glBindVertexArray(finalVao);
-    // glDrawElements(GL_TRIANGLES, finalIndeices.size(), GL_UNSIGNED_INT, 0);
-
-    // glViewport(0, screenHeight / 2, screenWidth / 2, screenHeight / 2);
-    // finalShader.use();
-    // glActiveTexture(GL_TEXTURE0);
-    // glBindTexture(GL_TEXTURE_2D, fboTexture);
-    // glBindVertexArray(finalVao);
-    // glDrawElements(GL_TRIANGLES, finalIndeices.size(), GL_UNSIGNED_INT, 0);
-
-    // glViewport(screenWidth / 2, screenHeight / 2, screenWidth / 2, screenHeight / 2);
-    // finalShader.use();
-    // glActiveTexture(GL_TEXTURE0);
-    // glBindTexture(GL_TEXTURE_2D, fboTexture);
-    // glBindVertexArray(finalVao);
-    // glDrawElements(GL_TRIANGLES, finalIndeices.size(), GL_UNSIGNED_INT, 0);
 
     glfwSwapBuffers(window);
     glfwPollEvents();
@@ -437,4 +538,35 @@ void scrollCallback(GLFWwindow *window, double xoffset, double yoffset)
 void framebuffer_size_callback(GLFWwindow *window, int width, int height)
 {
   glViewport(0, 0, width, height);
+}
+
+GLuint loadCubeTexture(std::vector<std::string> &textures)
+{
+  GLuint texture;
+  glGenTextures(1, &texture);
+  glBindTexture(GL_TEXTURE_CUBE_MAP, texture);
+  glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+  glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+  glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+
+  for (size_t i = 0; i < textures.size(); i++)
+  {
+    const std::string &path = textures[i];
+    int width, height, channels;
+    unsigned char *data = stbi_load(path.c_str(), &width, &height, &channels, 0);
+    if (data)
+    {
+      glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+      stbi_image_free(data);
+    }
+    else
+    {
+      std::cerr << "failed to load " << path << std::endl;
+    }
+  }
+
+  glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+  return texture;
 }

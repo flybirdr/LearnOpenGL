@@ -1,10 +1,13 @@
 #define GLFW_INCLUDE_NONE
 #define GLM_FORCE_MESSAGES
-#include "camera.h"
-#include "shader.h"
 #include "stb_image.h"
-#include "texture.h"
+#include <Camera.h>
 #include <GLFW/glfw3.h>
+#include <Mesh.h>
+#include <Model.h>
+#include <Shader.h>
+#include <Texture.h>
+#include <Vertex.h>
 #include <cmath>
 #include <fstream>
 #include <glad/glad.h>
@@ -13,6 +16,8 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <iostream>
 #include <sstream>
+
+using namespace glkit;
 
 const int screenWidth = 1440;
 const int screenHeight = 900;
@@ -228,19 +233,19 @@ void processInput(GLFWwindow *window)
   }
   else if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
   {
-    camera.processKeyBoard(FORWARD, deltaTime);
+    camera.processKeyBoard(Camera::FORWARD, deltaTime);
   }
   else if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
   {
-    camera.processKeyBoard(BACKWARD, deltaTime);
+    camera.processKeyBoard(Camera::BACKWARD, deltaTime);
   }
   else if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
   {
-    camera.processKeyBoard(LEFT, deltaTime);
+    camera.processKeyBoard(Camera::LEFT, deltaTime);
   }
   else if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
   {
-    camera.processKeyBoard(RIGHT, deltaTime);
+    camera.processKeyBoard(Camera::RIGHT, deltaTime);
   }
 }
 void mouseCallback(GLFWwindow *window, double xpos, double ypos)

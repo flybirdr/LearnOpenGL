@@ -1,18 +1,20 @@
 #define GLFW_INCLUDE_NONE
 // #define GLM_FORCE_MESSAGES
 #include "Character.h"
-#include "camera.h"
-#include "mesh.h"
-#include "model.h"
-#include "shader.h"
-#include "stb_image.h"
-#include "texture.h"
-#include "vertex.h"
+#include <Camera.h>
 #include <GLFW/glfw3.h>
+#include <Mesh.h>
+#include <Model.h>
+#include <Shader.h>
+#include <Texture.h>
+#include <Vertex.h>
 #include <cmath>
 #include <fstream>
+
 #include <ft2build.h>
-#include FT_FREETYPE_H
+
+#include <freetype/freetype.h>
+
 #include <glad/glad.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -20,7 +22,10 @@
 #include <iostream>
 #include <map>
 #include <sstream>
+#include <stb_image.h>
 #include <unistd.h>
+
+using namespace glkit;
 
 const int screenWidth = 1440;
 const int screenHeight = 900;
@@ -29,7 +34,7 @@ bool firstMouse = true;
 float lastX;
 float lastY;
 
-std::string cwd("");
+std::string cwd;
 
 Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
 std::map<GLchar, Character> characters;
@@ -46,6 +51,7 @@ int main(int, char **)
   getcwd(cwdBuffer, 1024);
   cwd = std::string(cwdBuffer) + "/../sample26";
   std::cout << ">>> cwd=" << cwd << std::endl;
+  
   glfwInit();
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -206,19 +212,19 @@ void processInput(GLFWwindow *window)
   }
   else if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
   {
-    camera.processKeyBoard(FORWARD, deltaTime);
+    camera.processKeyBoard(Camera::FORWARD, deltaTime);
   }
   else if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
   {
-    camera.processKeyBoard(BACKWARD, deltaTime);
+    camera.processKeyBoard(Camera::BACKWARD, deltaTime);
   }
   else if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
   {
-    camera.processKeyBoard(LEFT, deltaTime);
+    camera.processKeyBoard(Camera::LEFT, deltaTime);
   }
   else if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
   {
-    camera.processKeyBoard(RIGHT, deltaTime);
+    camera.processKeyBoard(Camera::RIGHT, deltaTime);
   }
 }
 void mouseCallback(GLFWwindow *window, double xpos, double ypos)
