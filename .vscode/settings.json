@@ -85,6 +85,7 @@
         "__string": "cpp",
         "concepts": "cpp",
         "numeric": "cpp",
-        "algorithm": "cpp"
+        "algorithm": "cpp",
+        "memory_resource": "cpp"
     }
 }
